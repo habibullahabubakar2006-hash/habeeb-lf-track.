@@ -1,0 +1,6 @@
+{
+  "name": "HABEEB LF TRACK",
+  "description": "HABEEB LF TRACK — All-in-one Islamic, Student, and AI Productivity Platform. Features Study, Deen, Habeeb AI, Wallet, and Planner.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
