@@ -1,12 +1,8 @@
 package com.example.ui.screens
 
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,18 +10,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.R
 import com.example.ui.components.HabeebLogo
 import kotlinx.coroutines.delay
 
@@ -33,135 +26,133 @@ import kotlinx.coroutines.delay
 fun SplashScreen(
   onNavigateToWelcome: () -> Unit
 ) {
-  // Animation state for fading in logo and text
-  val animateAlpha = remember { Animatable(0f) }
-  val animateScale = remember { Animatable(0.8f) }
+  val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
-  LaunchedEffect(key1 = true) {
-    // Staggered reveal animations
+  // Animation states for smooth reveal
+  val animateAlpha = remember { Animatable(0f) }
+  val animateScale = remember { Animatable(0.85f) }
+
+  LaunchedEffect(Unit) {
     animateAlpha.animateTo(
       targetValue = 1f,
-      animationSpec = tween(durationMillis = 1200, easing = FastOutSlowInEasing)
+      animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing)
     )
   }
 
-  LaunchedEffect(key1 = true) {
+  LaunchedEffect(Unit) {
     animateScale.animateTo(
       targetValue = 1f,
       animationSpec = spring(
-        dampingRatio = Spring.DampingRatioMediumBouncy,
-        stiffness = Spring.StiffnessLow
+        dampingRatio = Spring.DampingRatioLowBouncy,
+        stiffness = Spring.StiffnessMediumLow
       )
     )
   }
 
-  // 3-second delay then navigate to welcome screen
-  LaunchedEffect(key1 = true) {
-    delay(3000)
+  // Remove splash screen as soon as loading completes
+  LaunchedEffect(Unit) {
+    delay(1200)
     onNavigateToWelcome()
   }
+
+  // Theme-adaptive colors for crystal clear readability in both light & dark mode
+  val backgroundColor = if (isDark) Color(0xFF0A120E) else Color(0xFFF4F9F6)
+  val titleColor = if (isDark) Color.White else Color(0xFF0F8A5F)
+  val sloganColor = if (isDark) Color(0xFFFBBF24) else Color(0xFFB45309)
+  val subtextColor = if (isDark) Color(0xFF9CA3AF) else Color(0xFF4B5563)
+  val indicatorColor = if (isDark) Color(0xFF10B981) else Color(0xFF0F8A5F)
 
   Box(
     modifier = Modifier
       .fillMaxSize()
-      .testTag("splash_screen")
-  ) {
-    // 1. Beautiful Islamic geometric background
-    Image(
-      painter = painterResource(id = R.drawable.img_splash_bg_1784062882034),
-      contentDescription = "Islamic Geometric Background",
-      modifier = Modifier.fillMaxSize(),
-      contentScale = ContentScale.Crop
-    )
-
-    // Dark-green aesthetic overlay gradient for premium atmospheric depth & text legibility
-    Box(
-      modifier = Modifier
-        .fillMaxSize()
-        .background(
+      .background(
+        if (isDark) {
           Brush.verticalGradient(
             colors = listOf(
-              Color(0xAA0A1E15),
-              Color(0xDD040E0A)
+              Color(0xFF0F261C),
+              Color(0xFF06140E)
             )
           )
-        )
-    )
-
-    // 2. Centered Logo and Text Content
+        } else {
+          Brush.verticalGradient(
+            colors = listOf(
+              Color(0xFFFFFFFF),
+              Color(0xFFEDF7F2)
+            )
+          )
+        }
+      )
+      .systemBarsPadding()
+      .testTag("splash_screen"),
+    contentAlignment = Alignment.Center
+  ) {
     Column(
       modifier = Modifier
-        .fillMaxSize()
-        .padding(24.dp)
-        .navigationBarsPadding()
-        .statusBarsPadding(),
+        .fillMaxWidth()
+        .padding(horizontal = 24.dp, vertical = 16.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.SpaceBetween
+      verticalArrangement = Arrangement.Center
     ) {
-      Spacer(modifier = Modifier.height(20.dp))
-
-      // Middle Block: Logo and Branding
+      // Centered Approved Square Logo
       Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-          .weight(1f)
-          .wrapContentHeight(Alignment.CenterVertically)
           .alpha(animateAlpha.value)
           .scale(animateScale.value)
       ) {
         HabeebLogo(
-          size = 140.dp,
-          shapeRadius = 24.dp,
+          size = 110.dp,
+          shapeRadius = 22.dp,
           showBorder = true,
           contentDescription = "HABEEB LF TRACK App Logo",
           modifier = Modifier.testTag("splash_logo")
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
+        // Text "HABEEB LF TRACK"
         Text(
           text = "HABEEB LF TRACK",
-          style = MaterialTheme.typography.displayLarge,
-          color = Color.White,
+          style = MaterialTheme.typography.headlineMedium.copy(
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 0.5.sp
+          ),
+          color = titleColor,
           textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Slogan "LEARN • FAITH • TRACK • SUCCEED"
         Text(
           text = "LEARN • FAITH • TRACK • SUCCEED",
-          style = MaterialTheme.typography.bodyLarge.copy(
+          style = MaterialTheme.typography.labelMedium.copy(
             fontWeight = FontWeight.Bold,
-            letterSpacing = 1.sp
+            letterSpacing = 1.2.sp
           ),
-          color = MaterialTheme.colorScheme.secondary,
+          color = sloganColor,
           textAlign = TextAlign.Center,
-          modifier = Modifier.padding(horizontal = 16.dp)
+          modifier = Modifier.padding(horizontal = 12.dp)
         )
-      }
 
-      // Bottom Block: Custom modern loading spinner & small footer
-      Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-          .padding(bottom = 32.dp)
-          .alpha(animateAlpha.value)
-      ) {
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Circular progress indicator while loading
         CircularProgressIndicator(
-          color = MaterialTheme.colorScheme.secondary,
+          color = indicatorColor,
           strokeWidth = 3.dp,
           modifier = Modifier
-            .size(36.dp)
+            .size(32.dp)
             .testTag("splash_loading")
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
         Text(
-          text = "Elevating Productivity & Faith",
+          text = "Loading your workspace...",
           style = MaterialTheme.typography.labelSmall,
-          color = Color.White.copy(alpha = 0.5f),
-          letterSpacing = 1.5.sp
+          color = subtextColor,
+          letterSpacing = 0.5.sp
         )
       }
     }
